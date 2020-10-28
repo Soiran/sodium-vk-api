@@ -1,4 +1,4 @@
-# Вступление
+# sodium-vk-api
 
 Sodium - фреймворк для удобного создания ботов VK. В его функционал входят инструменты для контекстной обработки сообщения, создания команд, сценариев, работы с JSON и логом.
 
@@ -41,15 +41,13 @@ bot.start(err => {
 
 При инициализации объекта Bot в него обязательно нужно вложить токен, которого можно достать из вашего **config.json** файла, ****или используя обычную строку.
 
-{% hint style="warning" %}
 При открытии доступа к коду вашего бота убедитесь, что токена нигде в коде. Он должен быть скрыт либо в вашем конфиг файле, либо удален из кода бота заранее. Используйте .gitignore для скрытия файлов.
-{% endhint %}
 
 ## События
 
 Рекомендую подробнее ознакомиться со всеми типами событий в официальной документации.
 
-{% embed url="https://vk.com/dev/groups\_events" %}
+https://vk.com/dev/groups_events
 
 ### Обработка
 
@@ -79,10 +77,6 @@ bot.on('...', msg => {
 bot.message(msg => { ... })
 ```
 
-Подробнее о командах можно познакомиться в главе **Команды**.
-
-{% page-ref page="komandy.md" %}
-
 **Ответ**
 
 Если поля ответа от API имеют поле **peer\_id**, то в него автоматически вкладывается метод **.reply**. Он позволяет отправить новое сообщение в эту же беседу или диалог.
@@ -102,8 +96,6 @@ bot.message(msg => {
 
 #### Команда
 
-Подробнее с ними можно ознакомиться в [следующей главе](komandy.md).
-
 ```javascript
 const { Command } = require('sodium-vk-api/lib')
 // ...
@@ -111,8 +103,6 @@ bot.addCommands(...new Command('...', { ... }))
 ```
 
 #### Команда события сообщения
-
-Подробнее с ними можно ознакомиться в главе [**Клавиатура и кнопки**](klaviatura-i-knopki.md).
 
 ```javascript
 const { MessageEventCommand } = require('sodium-vk-api/lib')
@@ -124,8 +114,6 @@ bot.addMessageEventCommands(
 
 **Сцена**
 
-Подробнее со сценами можно ознакомиться в главе **Сцены**.
-
 ```javascript
 const { Stage } = require('sodium-vk-api/lib')
 // ...
@@ -135,8 +123,6 @@ bot.addStages(
 ```
 
 #### Плагин
-
-Подробнее с архитектурой плагинов можно ознакомиться в главе **Плагины**.
 
 ```javascript
 const { Plugin } = require('sodium-vk-api/lib')
@@ -291,10 +277,6 @@ bot.addCommand(new Command("(выражение)", {
 })
 ```
 
-{% hint style="info" %}
-**responseObject**  - ****объект ответа от API.
-{% endhint %}
-
 # Клавиатура и кнопки
 
 ```javascript
@@ -303,7 +285,7 @@ const { Keyboard } = require('sodium-vk-api/lib')
 
 Чтобы отправить клавиатуру, вам нужно включить в метод **.reply** сообщения объект клавиатуры.
 
-[https://vk.com/dev/bots\_docs\_3](https://vk.com/dev/bots_docs_3)
+https://vk.com/dev/bots_docs_3
 
 ## **Классы**
 
@@ -352,7 +334,7 @@ let mk = new Keyboard.Layout(
 
 Этот тип кнопок работает только на мобильных устройствах и уникален тем, что эти кнопки работают независимо, тоесть бот и пользователь могут не обмениваться сообщениями.
 
-[https://vk.com/dev/bots\_docs\_5](https://vk.com/dev/bots_docs_5)
+https://vk.com/dev/bots_docs_5
 
 ```javascript
 let panel = new Keyboard.Layout(
