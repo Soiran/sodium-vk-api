@@ -1,0 +1,6 @@
+/config.json
+/test.js
+/plugins
+/node_modules
+!/node_modules/node-vk-bot-api
+!/node_modules/axios

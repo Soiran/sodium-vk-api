@@ -1,0 +1,6 @@
+[submodule "node-vk-bot-api"]
+	path = node_modules/node-vk-bot-api
+	url = https://github.com/node-vk-bot-api/node-vk-bot-api
+[submodule "axios"]
+	path = node_modules/axios
+	url = https://github.com/axios/axios
