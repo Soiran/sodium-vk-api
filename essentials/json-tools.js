@@ -39,9 +39,14 @@ class Data {
         path = path.split('.')
         path.forEach(f => {
             if (typeof target == 'object' && !(target instanceof Array)) {
+                if (target[f] == undefined) {
+                    if (target instanceof Object) {
+                        target[f] = true
+                    }
+                }
                 target = target[f]
             } else {
-                throw `lightquery: Path "${path}" have not-object fields before target.`
+                throw `Path "${path}" have not-object fields before target.`
             }
         })
         return target
@@ -79,7 +84,7 @@ class Data {
                 (typeof root[f] == 'object' && !(root[f] instanceof Array))) {
                 root = root[f]
             } else {
-                throw `lightquery: Path "${path}" have not-object fields before target.`
+                throw `Path "${path}" have not-object fields before target.`
             }
         })
         root[field] = update(root[field])
@@ -90,43 +95,55 @@ class Data {
 		this.data = this.suit
     }
     
-    addModel(id, scheme, options={}) {
+    addModel(id, scheme) {
         this.models[id] = {
-            scheme: scheme,
-            options: options
+            scheme: scheme
         }
     }
 
-    new(modelName, path, struct) {
+    spawn(modelName, containerPath, keyField, struct) {
         if (!(modelName in this.models)) {
-            throw `lightquery: Model "${modelName}" is not exists in ${this.path}.`
+            throw `Model "${modelName}" is not exists in ${this.path}.`
         }
         let model = this.models[modelName]
-        for (let f of Object.keys(struct)) {
-            if (!(f in model.scheme)) {
-                throw `lightquery: Unexpected field ${f} in query.`
-            } else {
-                if (model.scheme[f] instanceof Function) {
+        for (let f in model.scheme) {
+            if (model.scheme[f] instanceof Function) {
+                if (!(f in struct)) {
+                    throw `Missing field ${f} in query.`
+                } else {
                     if (!model.scheme[f](struct[f])) {
-                        throw `lightquery: Valid type of field ${f} in query.`
+                        throw `Invalid type of field ${f} in query.`
                     }
+                }
+            } else {
+                if (!(f in struct)) {
+                    struct[f] = model.scheme[f]
                 }
             }
         }
         let data = this.data
-        let target = DataBase.pathTarget(data, path)
-        if (target instanceof Array) {
+        let container = Data.pathTarget(data, containerPath)
+        if (container instanceof Array) {
             target.push(struct)
-        } else if (target instanceof Object) {
-            if (model.options) {
-                if (model.options.keyField) {
-                    let tmp = struct[model.options.keyField]
-                    delete struct[model.options.keyField]
-                    target[tmp] = struct
+        } else if (container instanceof Object) {
+            if (keyField) {
+                if (keyField.startsWith('$')) {
+                    let f = keyField.slice(1)
+                    if (f) {
+                        let tmp = struct[f]
+                        delete struct[f]
+                        container[tmp] = struct
+                    } else {
+                        container[keyField] = struct
+                    }
+                } else {
+                    container[keyField] = struct
                 }
+            } else {
+                throw `Cannot spawn new instance of model ${modelName} in this path. (key field required)`
             }
         } else {
-            throw `lightquery: Cannot spawn new instance of model ${modelName} in this path.`
+            throw `Cannot spawn new instance of model ${modelName} in this path. (not a container)`
         }
         this.data = data
     }

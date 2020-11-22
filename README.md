@@ -522,15 +522,25 @@ db.exists('users.romiro27') // true || false
 db.addModel('user', {
     nickname: v => v instanceof String,
     name: v => v instanceof String, // проверка на значение
-    id: v => Number(v)
-}, { keyField: 'nickname' }) // поле имени ключа
+    id: v => Number(v),
+    messages: 0 // необязательное поле
+})
 ```
 
 #### Добавление
 
 ```javascript
-// db.new(id, path, struct)
-db.new('user', 'users', {
+// Добавление в массив:
+// db.spawn(id, path, keyField, struct)
+db.new('user', 'users', false, {
+    nickname: 'shirosakino',
+    name: 'Сергей',
+    id: 410685632
+})
+
+// Добавление в объект:
+// db.spawn(id, path, keyField, struct)
+db.new('user', 'users', '$id', {
     nickname: 'shirosakino',
     name: 'Сергей',
     id: 410685632
