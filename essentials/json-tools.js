@@ -36,19 +36,21 @@ class Data {
 
     static pathTarget(data, path) {
         var target = data
-        path = path.split('.')
-        path.forEach(f => {
-            if (typeof target == 'object' && !(target instanceof Array)) {
-                if (target[f] == undefined) {
-                    if (target instanceof Object) {
-                        target[f] = true
+        if (path) {
+            path = path.split('.')
+            path.forEach(f => {
+                if (typeof target == 'object' && !(target instanceof Array)) {
+                    if (target[f] == undefined) {
+                        if (target instanceof Object) {
+                            target[f] = true
+                        }
                     }
+                    target = target[f]
+                } else {
+                    throw `Path "${path}" have not-object fields before target.`
                 }
-                target = target[f]
-            } else {
-                throw `Path "${path}" have not-object fields before target.`
-            }
-        })
+            })
+        }
         return target
     }
 
