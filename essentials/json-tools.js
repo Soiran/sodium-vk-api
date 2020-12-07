@@ -125,7 +125,7 @@ class Data {
         let data = this.data
         let container = Data.pathTarget(data, containerPath)
         if (container instanceof Array) {
-            target.push(struct)
+            container.push(struct)
         } else if (container instanceof Object) {
             if (keyField) {
                 if (keyField.startsWith('$')) {
