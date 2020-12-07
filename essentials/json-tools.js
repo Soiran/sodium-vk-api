@@ -112,7 +112,7 @@ class Data {
                 if (!(f in struct)) {
                     throw `Missing field ${f} in query.`
                 } else {
-                    if (!model.scheme[f](struct[f])) {
+                    if (model.scheme[f](struct[f]) == (false || undefined || NaN)) {
                         throw `Invalid type of field ${f} in query.`
                     }
                 }
