@@ -91,7 +91,7 @@ class Data {
         })
         root[field] = update(root[field])
         this.data = data
-        return update(root[field])
+        return root[field]
 	}
 
 	wipe() {
