@@ -8,20 +8,20 @@ const fs = require('fs')
 
 class Data {
     constructor(path, suit) {
-        let tmp = path.split('.')
+        let tmp = path.split('.');
         if (tmp[tmp.length - 1] != 'json') {
-            throw 'Data can only read .json format file.'
+            throw '(constructor) Can only read .json format file.';
         }
-        this.path = path
-        this.suit = suit
-        this.models = {}
-        let pathCtx = this.path.split('/').slice(1)
-        let shiftingPath = './'
+        this.path = path;
+        this.suit = suit;
+        this.models = {};
+        let pathCtx = this.path.split('/').slice(1);
+        let shiftingPath = './';
         if (pathCtx.length > 1) {
             pathCtx.slice(0, 1).forEach(f => {
                 shiftingPath += (f + '/')
                 if (!fs.existsSync(shiftingPath)) {
-                    fs.mkdirSync(shiftingPath)
+                    fs.mkdirSync(shiftingPath);
                 }
             })
         }
@@ -35,37 +35,37 @@ class Data {
     }
 
     static pathTarget(data, path) {
-        var target = data
+        var target = data;
         if (path) {
-            path = path.split('.')
+            path = path.split('.');
             path.forEach(f => {
                 if (typeof target == 'object' && !(target instanceof Array)) {
                     if (target[f] == undefined) {
                         if (target instanceof Object) {
-                            target[f] = true
+                            target[f] = true;
                         }
                     }
-                    target = target[f]
+                    target = target[f];
                 } else {
-                    throw `Path "${path}" have not-object fields before target.`
+                    throw `Path "${path}" have not-object fields before target.`;
                 }
             })
         }
-        return target
+        return target;
     }
 
     exists(path) {
-        var target = this.data
-        var exists = true
+        var target = this.data;
+        var exists = true;
         path = path.split('.')
         path.forEach(f => {
             if (typeof target == 'object' && !(target instanceof Array) && target[f] != undefined) {
-                target = target[f]
+                target = target[f];
             } else {
-                exists = false
+                exists = false;
             }
         })
-        return exists
+        return exists;
     }
 
     get data() {
@@ -76,26 +76,50 @@ class Data {
 		fs.writeFileSync(this.path, JSON.stringify(value))
     }
 
+    set(path, value) {
+        let containerPath = path.split('.').slice(0, -1).join('.');
+        let field = path.split('.').pop();
+        let data = this.data;
+        let container = Data.pathTarget(data, containerPath);
+        if (container instanceof Object && !(container instanceof Array)) {
+            container[field] = value;
+            this.data = data;
+        } else {
+            throw `(set) Cannot create a new field in the path "${path}". (not an object)`;
+        }
+    }
+
+    push(path, value) {
+        let data = this.data;
+        let container = Data.pathTarget(data, path);
+        if (container instanceof Array) {
+            container.push(value);
+            this.data = data;
+        } else {
+            throw `(set) Cannot push a new element in the path "${path}". (not an array)`;
+        }
+    }
+
 	edit(path, update) {
-        path = path.split('.')
-        var data = this.data
-        var root = data
-        var field = path.pop()
+        path = path.split('.');
+        var data = this.data;
+        var root = data;
+        var field = path.pop();
         path.forEach(f => {
             if ((typeof root == 'object' && !(root instanceof Array)) &&
                 (typeof root[f] == 'object' && !(root[f] instanceof Array))) {
-                root = root[f]
+                root = root[f];
             } else {
-                throw `Path "${path}" have not-object fields before target.`
+                throw `(edit) Path "${path}" have not-object fields before target.`;
             }
         })
-        root[field] = update(root[field])
-        this.data = data
-        return root[field]
+        root[field] = update(root[field]);
+        this.data = data;
+        return root[field];
 	}
 
 	wipe() {
-		this.data = this.suit
+		this.data = this.suit;
     }
     
     addModel(id, scheme) {
@@ -106,49 +130,49 @@ class Data {
 
     spawn(modelName, containerPath, keyField, struct) {
         if (!(modelName in this.models)) {
-            throw `Model "${modelName}" is not exists in ${this.path}.`
+            throw `(spawn) Model "${modelName}" is not exists in ${this.path}.`;
         }
-        let model = this.models[modelName]
+        let model = this.models[modelName];
         for (let f in model.scheme) {
             if (model.scheme[f] instanceof Function) {
                 if (!(f in struct)) {
-                    throw `Missing field ${f} in query.`
+                    throw `(spawn) Missing field ${f} in query.`;
                 } else {
                     if (model.scheme[f](struct[f]) == (false || undefined || NaN)) {
-                        throw `Invalid type of field ${f} in query.`
+                        throw `(spawn) Invalid type of field ${f} in query.`;
                     }
                 }
             } else {
                 if (!(f in struct)) {
-                    struct[f] = model.scheme[f]
+                    struct[f] = model.scheme[f];
                 }
             }
         }
-        let data = this.data
-        let container = Data.pathTarget(data, containerPath)
+        let data = this.data;
+        let container = Data.pathTarget(data, containerPath);
         if (container instanceof Array) {
-            container.push(struct)
+            container.push(struct);
         } else if (container instanceof Object) {
             if (keyField) {
                 if (keyField.startsWith('$')) {
-                    let f = keyField.slice(1)
+                    let f = keyField.slice(1);
                     if (f) {
-                        let tmp = struct[f]
-                        delete struct[f]
-                        container[tmp] = struct
+                        let tmp = struct[f];
+                        delete struct[f];
+                        container[tmp] = struct;
                     } else {
-                        container[keyField] = struct
+                        container[keyField] = struct;
                     }
                 } else {
-                    container[keyField] = struct
+                    container[keyField] = struct;
                 }
             } else {
-                throw `Cannot spawn new instance of model ${modelName} in this path. (key field required)`
+                throw `(spawn) Cannot spawn new instance of model ${modelName} in this path. (key field required)`;
             }
         } else {
-            throw `Cannot spawn new instance of model ${modelName} in this path. (not a container)`
+            throw `(spawn) Cannot spawn new instance of model ${modelName} in this path. (not a container)`;
         }
-        this.data = data
+        this.data = data;
     }
 }
 
