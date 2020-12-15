@@ -89,6 +89,34 @@ class Data {
         }
     }
 
+    remove(path) {
+        let containerPath = path.split('.').slice(0, -1).join('.');
+        let field = path.split('.').pop();
+        let data = this.data;
+        let container = Data.pathTarget(data, containerPath);
+        if (container instanceof Object && !(container instanceof Array)) {
+            delete container[field];
+            this.data = data;
+        } else {
+            throw `(set) Cannot remove field in the path "${path}". (not an object)`;
+        }
+    }
+
+    rename(path, newName) {
+        let containerPath = path.split('.').slice(0, -1).join('.');
+        let field = path.split('.').pop();
+        let data = this.data;
+        let container = Data.pathTarget(data, containerPath);
+        if (container instanceof Object) {
+            let tmp = container[field];
+            delete container[field];
+            container[newName] = tmp;
+            this.data = data;
+        } else {
+            throw `(set) Cannot rename field in the path "${path}". (not an object)`;
+        }
+    }
+
     push(path, value) {
         let data = this.data;
         let container = Data.pathTarget(data, path);
