@@ -35,6 +35,7 @@ class Data {
     }
 
     static pathTarget(data, path) {
+        path = '' + path;
         var target = data;
         if (path) {
             path = path.split('.');
@@ -55,6 +56,7 @@ class Data {
     }
 
     exists(path) {
+        path = '' + path;
         var target = this.data;
         var exists = true;
         path = path.split('.')
@@ -77,6 +79,7 @@ class Data {
     }
 
     set(path, value) {
+        path = '' + path;
         let containerPath = path.split('.').slice(0, -1).join('.');
         let field = path.split('.').pop();
         let data = this.data;
@@ -90,6 +93,7 @@ class Data {
     }
 
     remove(path) {
+        path = '' + path;
         let containerPath = path.split('.').slice(0, -1).join('.');
         let field = path.split('.').pop();
         let data = this.data;
@@ -103,6 +107,7 @@ class Data {
     }
 
     rename(path, newName) {
+        path = '' + path;
         let containerPath = path.split('.').slice(0, -1).join('.');
         let field = path.split('.').pop();
         let data = this.data;
@@ -118,6 +123,7 @@ class Data {
     }
 
     push(path, value) {
+        path = '' + path;
         let data = this.data;
         let container = Data.pathTarget(data, path);
         if (container instanceof Array) {
@@ -129,6 +135,7 @@ class Data {
     }
 
 	edit(path, update) {
+        path = '' + path;
         path = path.split('.');
         var data = this.data;
         var root = data;
@@ -157,6 +164,8 @@ class Data {
     }
 
     spawn(modelName, containerPath, keyField, struct) {
+        containerPath = '' + containerPath;
+        keyField = '' + keyField;
         if (!(modelName in this.models)) {
             throw `(spawn) Model "${modelName}" is not exists in ${this.path}.`;
         }
