@@ -78,6 +78,10 @@ class Data {
 		fs.writeFileSync(this.path, JSON.stringify(value))
     }
 
+    get(path) {
+        return Data.pathTarget(this.data, path);
+    } 
+
     set(path, value) {
         path = '' + path;
         let containerPath = path.split('.').slice(0, -1).join('.');
