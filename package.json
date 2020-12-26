@@ -1,6 +1,6 @@
 {
   "name": "sodium-vk-api",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Powerful library for creating your bot, based on VK API.",
   "directories": {
     "lib": "lib",
