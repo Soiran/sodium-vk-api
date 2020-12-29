@@ -6,6 +6,9 @@ const fs = require('fs')
 
 // classes
 
+/**
+ * The data class is used for easy reading and editing of JSON files.
+ */
 class Data {
     constructor(path, suit) {
         let tmp = path.split('.');
@@ -34,7 +37,10 @@ class Data {
         }
     }
 
-    static pathTarget(data, path) {
+    /**
+     * Gets value by path from the discrete object.
+     */
+    static pathTarget(data, path='') {
         path = '' + path;
         var target = data;
         if (path) {
@@ -55,7 +61,10 @@ class Data {
         return target;
     }
 
-    exists(path) {
+    /**
+     * Checks for key existing.
+     */
+    exists(path='') {
         path = '' + path;
         var target = this.data;
         var exists = true;
@@ -69,7 +78,7 @@ class Data {
         })
         return exists;
     }
-
+    
     get data() {
 		return JSON.parse(fs.readFileSync(this.path))
 	}
@@ -78,11 +87,53 @@ class Data {
 		fs.writeFileSync(this.path, JSON.stringify(value))
     }
 
+    /**
+     * Gets value from path.
+     */
     get(path) {
         return Data.pathTarget(this.data, path);
-    } 
+    }
 
-    set(path, value) {
+    /**
+     * Gets keys from path.
+     */
+    keys(path) {
+        let obj = Data.pathTarget(this.data, path);
+        if (obj instanceof Object && !(obj instanceof Array)) {
+            return Object.keys(Data.pathTarget(this.data, path));
+        } else {
+            throw `Cannot get object keys in the path "${path}". (not an object)`;
+        }
+    }
+
+    /**
+     * Gets values from path.
+     */
+    values(path) {
+        let obj = Data.pathTarget(this.data, path);
+        if (obj instanceof Object && !(obj instanceof Array)) {
+            return Object.values(Data.pathTarget(this.data, path));
+        } else {
+            throw `Cannot get object values in the path "${path}". (not an object)`;
+        }
+    }
+
+    /**
+     * Gets entries from path.
+     */
+    entries(path) {
+        let obj = Data.pathTarget(this.data, path);
+        if (obj instanceof Object && !(obj instanceof Array)) {
+            return Object.entries(Data.pathTarget(this.data, path));
+        } else {
+            throw `Cannot get object entries in the path "${path}". (not an object)`;
+        }
+    }
+
+    /**
+     * Sets value to key by path.
+     */
+    set(path='', value) {
         path = '' + path;
         let containerPath = path.split('.').slice(0, -1).join('.');
         let field = path.split('.').pop();
@@ -96,7 +147,10 @@ class Data {
         }
     }
 
-    remove(path) {
+    /**
+     * Removes key by path.
+     */
+    remove(path='') {
         path = '' + path;
         let containerPath = path.split('.').slice(0, -1).join('.');
         let field = path.split('.').pop();
@@ -110,7 +164,10 @@ class Data {
         }
     }
 
-    rename(path, newName) {
+    /**
+     * Renames key by path.
+     */
+    rename(path='', newName) {
         path = '' + path;
         let containerPath = path.split('.').slice(0, -1).join('.');
         let field = path.split('.').pop();
@@ -126,7 +183,10 @@ class Data {
         }
     }
 
-    push(path, value) {
+    /**
+     * Push value to array from path.
+     */
+    push(path='', value) {
         path = '' + path;
         let data = this.data;
         let container = Data.pathTarget(data, path);
@@ -138,7 +198,10 @@ class Data {
         }
     }
 
-	edit(path, update) {
+    /**
+     * Edit key value from path.
+     */
+	edit(path='', update) {
         path = '' + path;
         path = path.split('.');
         var data = this.data;
@@ -157,17 +220,26 @@ class Data {
         return root[field];
 	}
 
+    /**
+     * Wipes all data to suit.
+     */
 	wipe() {
 		this.data = this.suit;
     }
     
+    /**
+     * Creates new data model.
+     */
     addModel(id, scheme) {
         this.models[id] = {
             scheme: scheme
         }
     }
 
-    spawn(modelName, containerPath, keyField, struct) {
+    /**
+     * Spawns data model.
+     */
+    spawn(modelName, containerPath='', keyField='', struct) {
         containerPath = '' + containerPath;
         keyField = '' + keyField;
         if (!(modelName in this.models)) {
